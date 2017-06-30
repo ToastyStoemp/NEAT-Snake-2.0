@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityNEATSnake_Wolf.CSharp", "UnityNEATSnake_Wolf.CSharp.csproj", "{E291D29E-0AEE-9B5E-ECC5-AF204D9CD1C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E291D29E-0AEE-9B5E-ECC5-AF204D9CD1C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E291D29E-0AEE-9B5E-ECC5-AF204D9CD1C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E291D29E-0AEE-9B5E-ECC5-AF204D9CD1C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E291D29E-0AEE-9B5E-ECC5-AF204D9CD1C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

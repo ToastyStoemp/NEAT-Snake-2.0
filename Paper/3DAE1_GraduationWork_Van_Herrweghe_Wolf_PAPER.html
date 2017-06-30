@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello!</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="graduation-work">Graduation work</h1>
+
+<p>Neuroevolution of Augmented Topologies - Wolf Van Herreweghe</p>
+
+
+
+<h2 id="index">Index</h2>
+
+<p><div class="toc">
+<ul>
+<li><a href="#graduation-work">Graduation work</a><ul>
+<li><a href="#index">Index</a></li>
+<li><a href="#1-introduction">1. Introduction</a></li>
+<li><a href="#2-game">2. Game</a></li>
+<li><a href="#3-ai">3. AI</a><ul>
+<li><a href="#basic-neat">Basic NEAT</a><ul>
+<li><a href="#neural-networks">Neural Networks</a></li>
+<li><a href="#genetic-algorithms">Genetic Algorithms</a></li>
+</ul>
+</li>
+<li><a href="#neat">NEAT</a><ul>
+<li><a href="#basic-life-cycle">Basic life cycle</a></li>
+<li><a href="#populate">Populate</a></li>
+<li><a href="#mutate">Mutate</a></li>
+<li><a href="#calculate">Calculate</a></li>
+<li><a href="#fitness">Fitness</a></li>
+<li><a href="#filter">Filter</a></li>
+<li><a href="#probability">Probability</a></li>
+<li><a href="#crossover">Crossover</a></li>
+<li><a href="#populate-1">Populate</a></li>
+</ul>
+</li>
+<li><a href="#genotype-vs-phenotype">Genotype vs Phenotype</a></li>
+<li><a href="#network-crossover-global-innovation-number">Network Crossover &amp; Global innovation number</a></li>
+<li><a href="#fsneat">FSNEAT</a></li>
+<li><a href="#rtneat">rtNEAT</a></li>
+<li><a href="#protection">Protection</a></li>
+<li><a href="#species">Species</a></li>
+<li><a href="#activation">Activation</a></li>
+<li><a href="#diversity">Diversity</a></li>
+<li><a href="#minimification">Minimification</a></li>
+<li><a href="#pool-selection-vs-rejection-sampling">Pool Selection vs Rejection Sampling</a><ul>
+<li><a href="#pool-selection">Pool Selection</a></li>
+<li><a href="#rejection-sampling">Rejection Sampling</a></li>
+</ul>
+</li>
+<li><a href="#inputs">Inputs</a></li>
+<li><a href="#outputs">Outputs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</p>
+
+
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<p>In this paper we will describe the process of constructing an AI that will play a 3D shooter game VS another AI instance. The AI will be constructed using NEAT - (Neural Evolution of Augmented Topologies)</p>
+
+
+
+<h2 id="2-game">2. Game</h2>
+
+<ul>
+<li><p>Description</p>
+
+<p>The main focus of this work is making the Neural Evolution Of Augmented Typologies AI structure. To represent the AI used we will construct a small demo project, that will showcase an example use case of the AI. Here we have chosen for a small shooter game. Two teams stand opposite of each other. They have to navigate around objects, find targets, eliminate targets, take cover, and make predictions about the enemy’s behavior. Agents should make decisions between running away, engaging in fire, or taking cover. Agents will be awarded points for their actions. The team to first eliminate the other team will claim victory.</p>
+
+<p>Future additional content might be:</p>
+
+<ul><li>Walls that players can shoot through</li>
+<li>Capture the flag gamemode</li>
+<li>VIP gamemode (one agent in each team is a ‘VIP’, the team loses as soon as this agent dies, thus it has to be protected by its teammates)</li>
+<li>An ammo system</li>
+<li>Weapons/Medkit/Armour drops around the map</li>
+<li>Shoot through light materials</li>
+<li>… <br>
+(It should be noted that any imaginable variety of additional gamemodes and conditions can be successfully introduced to the game. As long as the inputs are in accord with the tasks they have to perform, the agents will eventually learn how to master these tasks.)</li></ul></li>
+<li><p>Mechanics</p>
+
+<ul><li>Navigation</li>
+<li>Shooting</li>
+<li>Ducking for cover</li></ul>
+
+<p>All the players (agents) in the game will be AI driven. Since there is a lot of possible game strategies and methods of playing we should see quite some diversity between the agents, and allow for some unexpected battle situations.</p></li>
+</ul>
+
+<p>While working on the NEAT AI I will progressively make  different test cases to isolate issues and resolve those. <br>
+The first project will be a color matching AI, where the AI is given a target color as input, and has to output the exact same color as output. <br>
+Another test project will be a simplified version of Snake.</p>
+
+<h2 id="3-ai">3. AI</h2>
+
+<p>There are many types of AI systems available for this kind of game / concept. </p>
+
+<ul>
+<li>Behaviour Tree</li>
+<li>Neural Networks</li>
+<li>Finite State Machines</li>
+<li>Fuzzy Logic</li>
+<li>Rule-based AI</li>
+<li>Basic Probabilty</li>
+<li>Genetic Algorithms</li>
+</ul>
+
+<p>The AI that will be used for the agents is called NEAT (Neural Evolution of Augmented Topologies). The reason we picked for this AI-type, is for its flexibility and interesting approach in solving problems. This also makes it that an AI is not limited by the possible states / logic, but can rather come up with it’s own ideas of how to play the game. Perhaps it comes up with some interesting ways of solving / creating certain situations.</p>
+
+<ul>
+<li><h3 id="basic-neat">Basic NEAT</h3>
+
+<p>NEAT exists of two big sub systems</p>
+
+<ul><li><h4 id="neural-networks">Neural Networks</h4>
+
+<p>‘Neural Networks’ can be best described like an real brain, with nodes and neurons (connections)</p>
+
+<p><img src="http://i.imgur.com/uDgf5v9.png" alt="Basic Neural Network" title=""></p>
+
+<p>We have an input and output, every input is connected to every output. <br>
+Each connection has a certain ‘weight’ to it, this is how much influence the value will have on the end of the connection. <br>
+We can also introduce a hidden layer to a network. See picture below</p>
+
+<p><img src="http://i.imgur.com/3JgqfHW.png" alt="Hidden Neural Network" title=""> <br>
+Once again, every input is connected to every node on the hidden layer, and every hidden node is connected to every out going connection. <br>
+Of course we can add even more hidden nodes, and create a complex network, but that is beyond the scope of the explanation here.</p></li>
+<li><h4 id="genetic-algorithms">Genetic Algorithms</h4>
+
+<p>‘Genetic Algorithms’ is a method we use to combine two neural networks in this scenario.</p>
+
+<p>Two preexisting points of data (the ‘parents’) are combined to produce two new points of data (the ‘offspring’) as explained in the figuren below.</p>
+
+<p><img src="http://i.imgur.com/Ap0XvbD.png" alt="Simple Crossover" title=""></p>
+
+<p>In the figure above you can see two parents (Right) that produce a set of offspring (Left). A random part from from parent #1 and parent #2 are passed to each point of data of the next generation. Note that offspring #2 will always be the exact opposite of offspring #1, meaning that all the parts that offspring #1 did not get will be given to offspring #2 and vice versa.</p>
+
+<p>The application of this process will be further explained in the topic on Network Crossover &amp; Global innovation number</p></li></ul></li>
+<li><h3 id="neat">NEAT</h3>
+
+<h4 id="basic-life-cycle">Basic life cycle</h4>
+
+<p><img src="http://i.imgur.com/UUIPIR2.png" alt="Basic Evolution" title=""></p>
+
+<ol><li><h4 id="populate">Populate</h4>
+
+<p>All the agents are given their basic input nodes, output nodes, and possible hidden nodes. <br>
+The previous (last generation), or a random weight is assigned to the connections.</p></li>
+<li><h4 id="mutate">Mutate</h4>
+
+<ul><li>Chance for a weight modification.</li>
+<li>Chance for a new connection, with random weight value.</li>
+<li>Chance for a new hidden node, on an existing connection.</li></ul>
+
+<p>The new in-going connection from the new node will have a weight value of 1. <br>
+The new outgoing connection from the new hidden node will have the same weight as the original connection. <br>
+The original connection is disabled.</p></li>
+<li><h4 id="calculate">Calculate</h4>
+
+<p>In this step all the inputs will be transferred over to the network and the final result will be calculated.</p></li>
+<li><h4 id="fitness">Fitness</h4>
+
+<p>Calculate how well the AI handled the current task.</p></li>
+<li><h4 id="filter">Filter</h4>
+
+<p>Remove outperforming networks.</p></li>
+<li><h4 id="probability">Probability</h4>
+
+<p>Calculate how likly networks are to be selected for crossover</p></li>
+<li><h4 id="crossover">Crossover</h4>
+
+<p>Crossover 2 networks to create 1 or more offspring(s) <br>
+More on this in the topic Network Crossover &amp; Global innovation number</p></li>
+<li><h4 id="populate-1">Populate</h4>
+
+<p>Fill the pool with parent networks to be adapted to the next generation</p></li></ol></li>
+<li><h3 id="genotype-vs-phenotype">Genotype vs Phenotype</h3>
+
+<ul><li>Genotype <br>
+The way the data is represented in memory</li>
+<li>Phenotype <br>
+The way the data is represented to the end user (actions the agents take)</li></ul></li>
+<li><h3 id="network-crossover-global-innovation-number">Network Crossover &amp; Global innovation number</h3>
+
+<p>Earlier in this document we described the basics of crossover in a conventional method, however to apply this same concept on neural networks we need to make some small modifications. <br>
+The problem lays in the fact that comparing two networks for which connections they have would be virtually impossible, there is no construct way to know if a connection is connecting to the same nodes in the same way the first network did. Even if they are connected to the same nodes with the same index, this does not mean that the connection is the same. <br>
+The network structures are unable to be compared to one another. <br>
+This is where we introduce the Global innovation number. This is a global counter that will count up with a value of one, each time a new connection is being made. This number can then be used to track connections through time, and reveal how similar two networks are in structure.</p>
+
+<p>Now we have a starting point to apply crossover.</p>
+
+<p><img src="http://i.imgur.com/DVBiU6R.png" alt="Complex Crossover" title=""></p>
+
+<p>The two parent networks are compared in structure (global innovation number). <br>
+Connections that are present in Partner #1 but not in Partner #2 are called disjoint. <br>
+Connections that are not present in Partner #1 but are in Partner #2 and are have a smaller global innovation number than the highest global innovation number in Partner #1 are also called disjoint. Other connections are called excess. This will be important to compare the similarities within networks, read more on this in the Species topic.</p>
+
+<p>Connections are randomly chosen between Partner #1 and Partner #2, any connection that is disabled stays disabled. Not only are the connections transferred over, also the weight of the connections are maintained.</p></li>
+<li><h3 id="fsneat">FSNEAT</h3>
+
+<p>FS (automatic Feature Selection) is an method to build a better network for the desired task in a more direct way. <br>
+   Normal Neural Networks have connections from all inputs to all outputs, also in NEAT we start with connections from all inputs to all outputs. However some of the inputs are less important, and might have data that has no need to be influencing the system. <br>
+   Thus we let the network select it’s own features by starting from a blank slate, where not a single connection is present. In the first generation when the very first connection is made we do force it to be a connection from input to output node. <br>
+   Automatic Feature Selection limits the time the network needs to scale the important input weights versus the redundant connection weights.</p>
+
+<ul><li><h3 id="phased-pruning">Phased Pruning</h3>
+
+<p>An extension on NEAT, developed by Colin Green, adds periodic pruning of the  network typologies of candidate solutions during the evolution process. This makes removes connections that are not being used within the network, and thus reduces the size of the network. <br>
+This will not be implemented, since we already have automatic Feature Selection take care of the size distribution.</p></li>
+<li><h3 id="rtneat">rtNEAT</h3>
+
+<p>rtNEAT (real time NEAT) is an implementation of neat where we update the agents in real time.  <br>
+Every few game ticks we analyze the active systems. And update the neural network through genetic algorithms just like we are used to. <br>
+However, if we were to update all agents at once there would have a noticeable behavior change for all agents across the field. This would influence the player’s experience. <br>
+To solve this issue we switch out agents dynamically, every few game ticks the weaker agents are replaced with an offspring agent from better performing agents. Thus we can dynamically see the improvement of the AI over time. This does mean that we will need more agents in the field, to blend transitions. <br>
+All agents are placed in the scene at the same time and update each other. This method also allows us to train the AI more specifically. Starting out with simple navigation, we can add more obstacles to the map to train the agents for their current task at hands.</p></li></ul></li>
+<li><h3 id="protection">Protection</h3>
+
+<p>When a new node enters the system, the complexity of the system will increase,see the topic on minimification. However this additional node can have a huge benefit when given the time to mature. <br>
+Two main ways to protect the system</p>
+
+<ul><li>Weight transfer <br>
+When adding a new node on an existing connection we can transfer the existing weight of this connection, and thus the network should result almost the same fitness. <br>
+The input connection weight is set to a value of 1. <br>
+The outgoing connection weight is set to a value of the original connection.</li>
+<li>Protection through species <br>
+Species will be explained more thoroughly in the next topic. Since the current network is part of a species, it will be protected by the neighboring systems. <br>
+This will give it more chance to live through the next selection process.</li></ul></li>
+<li><h3 id="species">Species</h3>
+
+<p>Species is a method of grouping similar AI’s together and sharing their strengths and weaknesses. <br>
+All agents within the species their fitness will be accumulated for, and result in a average fitness factor for this species. <br>
+The average fitness factor is used as influence whether their species have to be discontinued or not. <br>
+The average fitness is calculated based on the Global rank of all the agents. This means that having one or more strong players within the species can contribute enough to allow it to stay in existence. <br>
+Weaker agents will be protected by these stronger agents, and will have time to mature their networks to surpass the stronger agents. <br>
+<img src="http://i.imgur.com/E99sDvL.png" alt="Species Evolution" title=""></p>
+
+<p>The Evolution steps in a Species based NEAT AI are similar to the basic version of NEAT. <br>
+Networks are grouped by the species. <br>
+Grouping of networks is done by comparing how similar these 2 networks are, with the following formula:</p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-279">\delta = \frac{c_1E}{N} + \frac{c_2D}{N} + c_3\bar{W}\\
+	E = \text{The amount of Excess} \\
+	D = \text{The amount of Disjoint} \\
+	\bar{W} = \text{Average weight difference}</script></p>
+
+<p>If a new network is not compatible with any other species, a new species is created.</p>
+
+<p>When all the agents have calculated their fitness, the average fitness is calculated for each species. <br>
+First we have to rank all the networks on a global rank.</p>
+
+<pre class="prettyprint"><code class="language-markdown hljs ">global = []
+for species in pool
+<span class="hljs-code">    for genome in species</span>
+<span class="hljs-code">        add genome to global </span>
+
+sort global by fitness
+counter = 0
+for genome in global 
+<span class="hljs-code">    genome.globalRank = counter++</span></code></pre>
+
+<p>Calculating the average fitness for one species, the average fitness is based on the global ranks of every genome ( structure ) part of that species</p>
+
+<pre class="prettyprint"><code class="language-markdown hljs ">total = 0
+for genome in species
+<span class="hljs-code">    total += genome.globalRank</span>
+species.averageFitness = total / species.genomes.Count</code></pre>
+
+<p>The average fitness is further used to discontinue species that are being out preformed.</p>
+
+<pre class="prettyprint"><code class="language-markdown hljs ">survived = [] 
+for species in pool
+<span class="hljs-code">    rand = math.floor(species.averageFitness / totalAverageFitness * poolSize)</span>
+<span class="hljs-code">    if rand &gt;= 1</span>
+<span class="hljs-code">        add species to survived</span></code></pre>
+
+<p>We also track the staleness of a species. If a species didn’t gain fitness in X-amount of generations, it will be discontinued. </p>
+
+<pre class="prettyprint"><code class="language-markdown hljs ">survived = []
+for species in pool
+<span class="hljs-code">    sort genomes by fitness               </span>
+<span class="hljs-code">    if genomes[0].fitness &gt; topFitness</span>
+<span class="hljs-code">       topFitness = genomes[0].fitness</span>
+<span class="hljs-code">       staleness = 0</span>
+<span class="hljs-code">    else</span>
+<span class="hljs-code">        staleness++</span>
+<span class="hljs-code">    if staleness &lt; maxStaleCount or topFitness &gt;= pool.topFitness</span>
+<span class="hljs-code">        add species to survived </span></code></pre></li>
+<li><h3 id="activation">Activation</h3>
+
+<p>Outputs of a network go through an activation function, this activation function will decide which action is applied or not. <br>
+Just like physical buttons there is no way to ‘half’-do a certain action.</p>
+
+<p>For the activation function we will use the sigmoid function: <br>
+<script type="math/tex; mode=display" id="MathJax-Element-280">f_{(x)} = \frac{1}{1 + e^{-x}}</script></p>
+
+<p><img src="http://i.imgur.com/3dJb4Ve.png" alt="Sigmoid Graph" title=""> <br>
+Shifting the function left and right will allow us to set a ‘sensitivity’</p></li>
+<li><h3 id="diversity">Diversity</h3>
+
+<p>The ultimate selection of agents is a variation of both a good fitness, but also a good amount of variation <br>
+Some challenges found throughout the life span of an agent can only be solved by backtracking, even just a little. <br>
+Thus we support variation throughout generations. <br>
+Once again this is handled mostly by the use of species. Weaker species that can survive. <br>
+<img src="http://i.imgur.com/M9oeN3N.png" alt="Diversity Graph" title=""></p></li>
+<li><h3 id="minimification">Minimification</h3>
+
+<p>Networks that grow to large in complexity are unwanted, these can only lead to situations where the AI spends a long time finding a good weight balance, and are thus frowned upon.</p>
+
+<p>While calculating the fitness, we apply an influence based on the size of the network. With the exception of the input and output nodes.</p>
+
+<p>Every other connection and or hidden node, will result in a small penalty for the current system. Even if systems obtain a good fitness factor, smaller, less complex networks, will be put forward and result in a higher probability to be kept in future generations.</p></li>
+<li><h3 id="pool-selection-vs-rejection-sampling">Pool Selection vs Rejection Sampling</h3>
+
+<h4 id="pool-selection">Pool Selection</h4>
+
+<p>All the actors are placed a pool for the amount of times they are likely to be picked. <br>
+For example; Agents A, B, and C have a probability of 8, 2, and 1 respectively. <br>
+Agent A would be placed in the pool 8 times, <br>
+Agent B would be placed in the pool 2 times, <br>
+Agent C would be placed in the pool 1 time.   </p>
+
+<p>Now we can randomly select agents, and maintain the same probability for each agent to be selected.</p>
+
+<p><img src="http://i.imgur.com/Lfb58hr.png" alt="Pool Selection" title=""></p>
+
+<h4 id="rejection-sampling">Rejection Sampling</h4>
+
+<p>A random agent is selected. <br>
+If the random agents fitness is higher than a random number, (scaled to be between 0 - 1) then the agent is used as selection. <br>
+If the agent does not meet the required fitness we select a new random agents</p>
+
+<p><img src="http://i.imgur.com/EvKdlEN.png" alt="Rejection Sampling" title=""></p>
+
+<p>The advantages of Rejection Sampling over Pool Selection is that less memory is consumed by a large pool of duplicate agents. The processing power required for Rejection Sampling is much lower, and thus will execute much faster compared to Pool Selection.</p></li>
+<li><h3 id="inputs">Inputs</h3>
+
+<p>Picking a good set of inputs for the agents can make a noticeable different in the time required to generate a good AI structure.</p>
+
+<p>In this scenario we have divided to give agents a view cone, just like a human. <br>
+The AI will be able to see enemies that are visible. <br>
+On top of that the AI will be given a top down view of the map, with regions where the agents can take cover from enemy fire. <br>
+The map will also show all friendly units, even if they can’t actively see their allies.</p>
+
+<p>Agents are also given the amount of bullets left in their current clip, and their Health Points. <br>
+So that they can make decisions based on their current situations.</p>
+
+<p>Future additional parameters might be: <br>
+    * Sound from nearby enemies <br>
+    * Position of explosive barrels (damage to area of effect)</p></li>
+<li><h3 id="outputs">Outputs</h3>
+
+<p>The outputs of the AI will be the link to the players actual actions (phenotype)  </p>
+
+<p>List of outputs:</p>
+
+<ul><li>Walk forward</li>
+<li>Rotate left/right</li>
+<li>Shoot</li>
+<li>Crouch</li></ul>
+
+<p>More possible outputs might be added depending on test results.</p></li>
+</ul>
+
+<h2 id="4-conclusion">4. Conclusion</h2>
+
+<p>Working on Neural Evolutions of Augmented Typologies was definitely very interesting. While the topic sounds simple when explained, it gave me a lot of challenges down the road. All documentation revolving this topic is very abstract and are very broad, not case specific. So it is an interesting progression rate. Converting the abstract ideas into code surfaces a lot of small hidden connections and shows how important order of procedure in this kind of system is. Building the NEAT framework completely from scratch really showed me how much attention for detail is needed.</p>
+
+<h3 id="reflection">Reflection</h3>
+
+<p>If I were to revisit this topic again I would start by not making my own framework for NEAT, even though this has proven to me the best learning method. I have spend most of my time on this, without much results. A NEAT system without <em>species</em> took me 1/3rd the time to make, and yields similar results for simple test cases. </p>
+
+<p>Really understanding the importance of the <em>innovation number</em> took me far too long, implementing it correctly even longer.</p>
+
+<p>Understanding how to select species for the next generation. In this paper I have described both Pool Selection and Rejection Sampling, but the AI uses a much more advanced system, that I have picked up from another project. The line of thought behind this selection method was more than a mystery, However it did work a lot better, with the exception that the AI became ‘too’ focused and would end up with only one species, even in a pool of a thousand agents.</p>
+
+<h3 id="final-words">Final Words</h3>
+
+<p>Many people have supported me through the hours and hours of developing and learning NEAT, Also I want to thank my mentor, Samyn Koen, who has helped me through this project, and has given feedback and support where needed. It has been a enjoyable experience, and I have learned a lot more than I thought I would. I am still interested in finding the main differences in why my version behaves so different compared to the SharpNEAT framework. And will continue looking into these projects along the road so I can improve my own.</p>
+
+<h3 id="refrences">Refrences</h3>
+
+<ul>
+<li><em>Real-Time Evolution of Neural Networks in the NERO Video Game - Kenneth O. Stanley, Bobby D. Bryant, Igor Karpov and Risto Miikkulaine </em> <br>
+<em><a href="http://www.aaai.org/Papers/AAAI/2006/AAAI06-277.pdf">http://www.aaai.org/Papers/AAAI/2006/AAAI06-277.pdf</a> </em></li>
+<li><em>Neuralevolution of augmented topologies - Wikipedia</em> <br>
+<em><a href="https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies">https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies</a>  </em></li>
+<li><em>rtNEAT C++ - Erking Bahceci, Igor V. Karpov and Kenneth Stanley</em> <br>
+<em><a href="http://nn.cs.utexas.edu/?rtNEAT">http://nn.cs.utexas.edu/?rtNEAT</a></em></li>
+<li><em>Behaviour trees for AI - Chris Simpson</em> <br>
+<em><a href="http://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php">http://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php</a></em></li>
+<li><em>Neural Networks - Daniel Shiffman</em> <br>
+<em><a href="http://natureofcode.com/book/chapter-10-neural-networks/">http://natureofcode.com/book/chapter-10-neural-networks/</a></em></li>
+<li><em>Finite-State Machines: Theory and Implementation - Fernando Bevilacqua</em> <br>
+<em><a href="https://gamedevelopment.tutsplus.com/tutorials/finite-state-machines-theory-and-implementation--gamedev-11867">https://gamedevelopment.tutsplus.com/tutorials/finite-state-machines-theory-and-implementation–gamedev-11867</a></em></li>
+<li><em>Artificial Intelligence - Fuzzy Logic Systems - Tutorials Point</em> <br>
+<em><a href="https://www.tutorialspoint.com/artificial_intelligence/artificial_intelligence_fuzzy_logic_systems.htm">https://www.tutorialspoint.com/artificial_intelligence/artificial_intelligence_fuzzy_logic_systems.htm</a></em></li>
+<li><em>The origin of Rule-Based Systems in AI - Randall Davis and Jonathan J. King</em> <br>
+<em><a href="http://www.aaai.org/Papers/Buchanan/Buchanan04.pdf">http://www.aaai.org/Papers/Buchanan/Buchanan04.pdf</a></em></li>
+<li><em>Artificial Intelligence II Some supplementary notes on probability - Sean B. Holden</em> <br>
+<em><a href="https://www.cl.cam.ac.uk/teaching/1011/ArtIntII/basic-probability.pdf">https://www.cl.cam.ac.uk/teaching/1011/ArtIntII/basic-probability.pdf</a></em></li>
+<li><em>AI For Game Developers - David M. Bourg and Glenn Seeman</em> <br>
+<em><a href="http://184.168.171.185/BOOKS/DVD%201/AI%20For%20Game%20Developers%20-%20David%20M.%20Bourg,%20Glenn%20Seeman.pdf">http://184.168.171.185/BOOKS/DVD%201/AI%20For%20Game%20Developers%20-%20David%20M.%20Bourg,%20Glenn%20Seeman.pdf</a></em></li>
+<li><em>Automatic Feature Selection in Neuroevolution - Shimon Whiteson, Peter Stone, Kenneth O.Stanley, Risto Miikkulainen and Nate Kohi</em> <br>
+<em><a href="http://www.cs.utexas.edu/users/pstone/Papers/bib2html-links/GECCO05-fsneat.pdf">http://www.cs.utexas.edu/users/pstone/Papers/bib2html-links/GECCO05-fsneat.pdf</a></em></li>
+<li><em>Neat Genome representation - ( unknown )</em> <br>
+<em><a href="https://dl2.pushbulletusercontent.com/VkRXpjtYEzPTx7wClb3kVaEsbqBQR2L9/neatgenome.jpg">https://dl2.pushbulletusercontent.com/VkRXpjtYEzPTx7wClb3kVaEsbqBQR2L9/neatgenome.jpg</a></em></li>
+</ul></div></body>
+</html>

@@ -1,0 +1,119 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class LinkNetwork : MonoBehaviour {
+
+    int inputCount;
+    int outputCount;
+    int hiddenLayerCount;
+    //float bias; Bias will be ignored for now
+
+    List<LinkLayer> Layers;
+    List<LinkLayer> WeightLayers;
+
+    public LinkNetwork(int InputCount, int OutputCount, int HiddenLayerCount)//, float Bias) //4 //3 //1
+    {
+        inputCount = InputCount;
+        outputCount = OutputCount;
+        hiddenLayerCount = HiddenLayerCount;
+        //bias = Bias;
+
+        Layers = new List<LinkLayer>();
+        WeightLayers = new List<LinkLayer>();
+
+        //Initialize layers  Only works for 1 hidden layer
+        Layers.Add(new LinkLayer(InputCount, 1));
+        Layers.Add(new LinkLayer(InputCount + OutputCount, 1));
+        Layers.Add(new LinkLayer(OutputCount, 1));
+
+        WeightLayers.Add(new LinkLayer(InputCount + OutputCount, InputCount));
+        WeightLayers.Add(new LinkLayer(OutputCount, InputCount + OutputCount));
+    }
+
+    public void SetInputs(List<float> inputs)
+    {
+        for (int i = 0; i < inputs.Count; i++)
+        {
+            Layers[0].SetCell(i, 0, inputs[i]);
+        }
+    }
+
+    public void AddWeightLayer(LinkLayer weightLayer, int index)
+    {
+        WeightLayers[index] = weightLayer;
+    }
+
+    public LinkLayer CreateRandomWeightLayer(int incommingCount, int outgoingCount) // Set random weights the weight layers ( only used once at the start of the AI ) 
+    {
+        LinkLayer weightLayer = new LinkLayer(outgoingCount, incommingCount);
+        weightLayer.SetRandom(0, 1);
+        return weightLayer;
+    }
+
+    public List<float> GetOutPuts()
+    {
+        Calculate(); //Calculate everything
+
+        List<float> outputs = new List<float>();
+        LinkLayer OutPutLayer = Layers[Layers.Count - 1];
+        for (int i = 0; i < OutPutLayer._rows; i++)
+        {
+            outputs.Add(OutPutLayer.GetCell(i, 0)); //Take only the first row of the outputs ( should be only 1 row ), false makes sure it does not apply the weight;
+        }
+        return outputs;
+    }
+
+    private void Calculate()
+    {
+        int weightIndex = 0;
+        for (int i = 0; i < Layers.Count - 1; i++)
+        {
+            LinkLayer InputLayer = Layers[i];
+            LinkLayer OutputLayer = new LinkLayer(WeightLayers[weightIndex]._rows, Layers[i]._columns);
+            WeightLayers[weightIndex].Mul(ref InputLayer, ref OutputLayer);
+
+            Layers[i + 1] = OutputLayer;
+            weightIndex++;
+        }
+    }
+
+    public LinkLayer CreateLayer(int count)
+    {
+        return new LinkLayer(count, 1); //All layers are 1 column Matrixes for now.
+    }
+
+    public Genome ToGenome()
+    {
+        Genome resultGenome = new Genome();
+        List<float> weights = new List<float>();
+        for (int i = 0; i < WeightLayers.Count; i++)
+        {
+            for (int k = 0; k < WeightLayers[i]._rows; k++)
+            {
+                for (int l = 0; l < WeightLayers[i]._columns; l++)
+                {
+                    weights.Add(WeightLayers[i].GetCell(k, l));
+                }
+            }
+        }
+        resultGenome.weights = weights;
+        return resultGenome;
+    }
+
+    public void fromGenome(Genome Genome) //does not work if more then one hidden layer!!!
+    {
+        int index = 0;
+        for (int i = 0; i < WeightLayers.Count; i++)
+        {
+            for (int r = 0; r < WeightLayers[i]._rows; r++)
+            {
+                for (int c = 0; c < WeightLayers[i]._columns; c++)
+                {
+                    WeightLayers[i].SetCell(r, c, Genome.weights[index++]);
+                }
+            }
+        }
+    }
+
+}
